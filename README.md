@@ -94,7 +94,7 @@ pip install -r requirements.txt
 ## Project Structure
 
 ### Files Description
-* `PyCar.py`: Main simulation script that runs the self-driving car simulation.
+* `self-driving-car-simulation.py`: Main simulation script that runs the self-driving car simulation.
 * `config-feedforward.txt`: Configuration file for the NEAT algorithm.
 * `maps/`: Directory containing different map layouts for the simulation.
 * `README.md`: This document, describing the tutorial and experiment tasks.
@@ -106,7 +106,7 @@ pip install -r requirements.txt
 To start the simulation, simply run the file from your IDE with the following command:
 
 ```python
-python PyCar.py
+python self-driving-car-simulation.py
 ```
 
 Make sure the `config-feedforward.txt` file is in the same directory as the simulation script.
@@ -118,9 +118,9 @@ Make sure the `config-feedforward.txt` file is in the same directory as the simu
 
 ### 1. Tweak Parameters
 
-* Adjust variables from the `Car` class from `PyCar.py` such as:
+* Adjust variables from the `Car` class from `self-driving-car-simulation.py` such as:
     - the speed
-    - the car angle
+    - the rotation angle
     - the number of sensors and sensor angle
 
 * Adjust variables from the NEAT `config-feedforward.txt` file such as:
@@ -130,14 +130,14 @@ Make sure the `config-feedforward.txt` file is in the same directory as the simu
 
 Note: You should adjust those parameters one by one and observe how these changes affect the car's performance.
 
-* What happens if the car angle is set to 90°? 
+* What happens if the rotation angle is set to 90°? 
 
 * What is the best combination of parameters for optimal performance?
 
 ---
 > Default parameters:
 >  * speed = 2 
->  * rotation_angle = 5
+>  * rotation_angle = 2
 >  * cars per generation = 10
 >  * only one forward-facing sensor
 
