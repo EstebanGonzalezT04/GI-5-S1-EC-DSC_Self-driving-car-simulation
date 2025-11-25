@@ -127,7 +127,10 @@ class Car:
         self.check_collision(map)
         self.radars.clear()
 
-        self.check_radar(0, map)
+        sensor_angles = [-90, -45, 0, 45, 90]
+        for angle in sensor_angles:
+            self.check_radar(angle, map)
+
 
     def get_data(self):
         """
