@@ -73,7 +73,7 @@ Follow these steps to set up and run the simulation on your computer.
 ### Clone the Repository (or Download as ZIP)
 
 ```bash
-git clone https://github.com/lmoncla/GI-5-S1-EC-DSC_Self-driving-car-simulation.git
+git clone https://github.com/ludovicmoncla/GI-5-S1-EC-DSC_Self-driving-car-simulation.git
 ```
 ### (Optional) Option 1. Create a Virtual Environment
 ```bash
