@@ -28,7 +28,7 @@ class Car:
         self.rotate_surface = self.surface
         self.pos = [700, 650]
         self.angle = 0
-        self.speed = 20
+        self.speed = 12
         self.center = [self.pos[0] + 50, self.pos[1] + 50]
         self.radars = []
         self.radars_for_draw = []
@@ -36,7 +36,9 @@ class Car:
         self.goal = False
         self.distance = 0
         self.time_spent = 0
-        self.rotation_angle = 2
+        self.rotation_angle = 8
+         # NEW: for incremental progress reward
+        self.last_distance = 0
 
     def draw(self, screen):
         """
@@ -127,7 +129,7 @@ class Car:
         self.check_collision(map)
         self.radars.clear()
 
-        sensor_angles = [-90, -45, 0, 45, 90]
+        sensor_angles = [-60, -45, -22, 0, 22, 45, 60]
         for angle in sensor_angles:
             self.check_radar(angle, map)
 
@@ -140,7 +142,7 @@ class Car:
             list[int]: A list of scaled radar distances.
         """
         radars = self.radars
-        ret = [0, 0, 0, 0, 0]
+        ret = [0, 0, 0, 0, 0, 0, 0]
         for i, r in enumerate(radars):
             ret[i] = int(r[1] / 30)
         return ret
@@ -156,12 +158,32 @@ class Car:
 
     def get_reward(self):
         """
-        Calculate fitness reward based on survival time.
-
-        Returns:
-            float: The time-based reward value.
+        Shaped reward:
+        - Small reward for being alive
+        - Reward for forward progress (distance traveled this step)
+        - Reward for staying away from walls (using radar distances)
         """
-        return self.time_spent / 100
+        # If the car is already dead, no reward (you'll penalize in the loop)
+        if not self.is_alive:
+            return 0.0
+
+        # 1) Base survival reward
+        reward = 0.1  # small constant per alive step
+
+        # 2) Forward progress: distance traveled since last step
+        step_distance = self.distance - self.last_distance
+        self.last_distance = self.distance
+        # scale it down so it doesn't explode
+        reward += 0.01 * step_distance
+
+        # 3) Safety: encourage staying far from walls
+        if self.radars:
+            # radar distances go from 0 to ~300
+            min_radar = min(r[1] for r in self.radars)
+            safety = min_radar / 300.0  # normalize 0..1
+            reward += 0.5 * safety
+
+        return reward
 
     def rot_center(self, image, angle):
         """
@@ -294,9 +316,17 @@ def run_car(genomes, config):
         remain_cars = 0
         for i, car in enumerate(cars):
             if car.get_alive():
-                remain_cars += 1
+                # update car
                 car.update(map)
-                genomes[i][1].fitness += car.get_reward()
+
+                if car.get_alive():
+                    # still alive → give shaped reward
+                    remain_cars += 1
+                    genomes[i][1].fitness += car.get_reward()
+                else:
+                    # just crashed this step → penalize
+                    genomes[i][1].fitness -= 5.0
+
 
         if remain_cars == 0:
             break
